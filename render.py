@@ -373,8 +373,8 @@ SECTIONS = [
     ("AMERICAS + OCEANIA", [
         ("Australia opens asbestos week",
          "One in three homes found to contain asbestos materials."),
-        ("NZ fight to save Wellington Test",
-         "India\u2019s record 720/9 leaves NZ 157/4 at lunch on day 5."),
+        ("NZ bat out draw vs India",
+         "Mitchell 49* sees NZ to 239/5 in 120 overs after India's record 720/9."),
         ("Delta failure snarls Atlanta",
          "Computer fault delays hundreds of flights before Thanksgiving."),
         ("King tides threaten San Francisco",
