@@ -60,15 +60,21 @@ def split_lines(draw, txt, fnt, maxw):
 
 
 def fit_block(draw, head, deck, hf, df, maxw, budget):
-    """Headline (max 2 lines) plus deck trimmed to the pixel budget."""
-    hl = split_lines(draw, head, hf, maxw)[:2]
+    """Headline (max 2 lines) plus deck (max 3 lines) within the budget.
+
+    A brief that does not fit FAILS LOUDLY instead of being silently
+    cut: a clipped sentence is a visible defect, so the renderer must
+    refuse to ship it. Budget 56 = 2 headline lines (2x15) + 2 deck
+    lines (2x13), or 1 headline line + 3 deck lines.
+    """
+    hl = split_lines(draw, head, hf, maxw)
     dl = split_lines(draw, deck, df, maxw)
-    while dl and (len(hl) * 15 + len(dl) * 13) > budget:
-        dl = dl[:-1]
-    if not dl:
-        dl = split_lines(draw, deck, df, maxw)[:1]
-        if len(hl) * 15 + 13 > budget:
-            hl = hl[:1]
+    cost = len(hl) * 15 + len(dl) * 13
+    if len(hl) > 2 or len(dl) > 3 or cost > budget:
+        raise SystemExit(
+            f"fit_block overflow: headline {len(hl)} lines, deck "
+            f"{len(dl)} lines, cost {cost} > budget {budget}: "
+            f"{head!r} / {deck!r}")
     return hl, dl
 
 
@@ -276,23 +282,29 @@ for poly in parse_polys(LAND_S):
     d.polygon([xy(lo, la) for lo, la in poly], fill=SHORE, outline=COAST)
 
 # lon, lat, label, anchor, dx, dy — 8 labelled, 4 dots in the crowd.
+# Optional 7th/8th fields shift the DOT only (ox, oy): Sparta II is
+# nudged west so its dot no longer crowds the Dymer dot.
 MARKS = [
-    (30.7, 36.9, "ANTALYA", "ra", -9, 4),
+    (30.7, 36.9, "ANTALYA", "la", 9, -12),
     (30.3, 50.8, "DYMER", "la", 9, -14),
-    (26.2, 60.5, None, None, 0, 0),
+    (26.2, 60.5, None, None, 0, 0, -10, -2),
     (4.35, 50.85, "BRUSSELS", "ra", -9, -6),
     (50.6, 26.15, "BAHRAIN", "la", 9, 8),
     (56.3, 26.6, None, None, 0, 0),
     (44.2, 15.35, None, None, 0, 0),
-    (20.1, 32.1, "BENGHAZI", "la", 9, -16),
+    (20.1, 32.1, "BENGHAZI", "ra", -9, 0),
     (32.5, 15.6, "KHARTOUM", "la", 9, 14),
     (6.1, 4.9, None, None, 0, 0),
     (77.2, 28.6, "NEW DELHI", "la", 9, -6),
     (-84.43, 33.64, "ATLANTA", "la", 9, -6),
 ]
 pf = typeface(SANS_B, 11)
-for lon, lat, label, anchor, dx, dy in MARKS:
+for mark in MARKS:
+    lon, lat, label, anchor, dx, dy = mark[:6]
+    ox, oy = mark[6:8] if len(mark) > 6 else (0, 0)
     x, y = xy(lon, lat)
+    x += ox
+    y += oy
     d.ellipse([x - 6, y - 6, x + 6, y + 6], fill=DOT,
               outline=(255, 255, 255), width=2)
     if label:
@@ -309,7 +321,8 @@ SECTIONS = [
         ("NATO meets on Poland today",
          "Allies gather in Brussels over Russian Kh-101 missiles in Poland."),
         ("Belgium grounds all flights",
-         "Air traffic strike cancels 429 Brussels Airport flights today."),
+         "All flights 07:00\u201321:00 cancelled; 429 scheduled, 59,500 "
+         "passengers hit."),
         ("Plot to kill rapper Kyivstoner",
          "Poland says Russia tried twice \u2014 in Denmark and in Poland."),
         ("Liverpool thrash United 4\u20130",
@@ -325,12 +338,12 @@ SECTIONS = [
          "Tankers gather at Kharg to test the US blockade; experts doubt it."),
         ("Trump eyes new Iran strikes",
          "New strikes after the new year if no deal, he tells Fox News."),
-        ("Settlers torch cars in West Bank",
+        ("Settlers torch West Bank cars",
          "At least a dozen cars burned; Eisenkot calls it \u2018Jewish "
          "terrorism\u2019."),
         ("Bahrain takes Iran to the UN",
          "Manama demands enforcement of Resolution 2817 and full damages."),
-        ("Saudi jets hit Sanaa fuel station",
+        ("Saudi jets hit Sanaa station",
          "Houthi media say six hurt; coalition says it stopped a drone."),
         ("Netanyahu\u2013Eisenkot talks fail",
          "Unity-government talks end with no deal over who leads."),
@@ -339,19 +352,20 @@ SECTIONS = [
         ("Drones kill four near Khartoum",
          "A UN building is damaged; Sudan\u2019s army blames launches from "
          "Ethiopia."),
-        ("Nigeria boat sinks: 24 dead",
+        ("Nigeria boat: at least 24 dead",
          "Overloaded boat carrying funeral mourners capsizes in Bayelsa."),
-        ("15 die in South Sudan raid",
-         "Rebels hit a cattle camp in Warrap; officials warn toll may rise."),
+        ("At least 24 die in South Sudan raid",
+         "Rebels hit a cattle camp in Warrap; 7 children among the dead."),
         ("Fighting traps WHO Ebola team",
          "Clashes pin the team inside a DR Congo hospital for over a day."),
         ("Nepal PM meets Modi today",
          "Balendra Shah holds talks in New Delhi on his first trip abroad."),
-        ("Search resumes at Cikande factory",
-         "24 body bags recovered; 29 workers still missing after the fire."),
+        ("Search resumes at Cikande",
+         "24 body bags found at torched candy factory; 29 workers still "
+         "missing."),
         ("JEE Main sign-up closes today",
          "Registration ends for India\u2019s 2027 engineering entrance exam."),
-        ("Japan marks Labor Thanksgiving",
+        ("Japan's Labor Thanksgiving",
          "National holiday; Tokyo markets closed for the day."),
         ("US futures bounce, Asia braces",
          "Taiwan down 17% in a week; Seoul readies market stabilisation."),
@@ -359,17 +373,17 @@ SECTIONS = [
     ("AMERICAS + OCEANIA", [
         ("Australia opens asbestos week",
          "One in three homes found to contain asbestos materials."),
-        ("NZ battle to save Wellington Test",
+        ("NZ fight to save Wellington Test",
          "India\u2019s record 720/9 leaves NZ 157/4 at lunch on day 5."),
         ("Delta failure snarls Atlanta",
          "Computer fault delays hundreds of flights before Thanksgiving."),
-        ("San Francisco braces for king tides",
+        ("King tides threaten San Francisco",
          "Record tides feared; mayor urges no non-essential travel."),
         ("US ports face cyber surge",
          "LA blocked 120 million attack attempts in August, FT reports."),
-        ("Patch deadline hits US agencies",
+        ("US agencies face patch deadline",
          "Four exploited flaws due today, led by a VMware bug rated 9.8."),
-        ("Democrats take House, 258 seats",
+        ("Democrats win House, 258 seats",
          "Biggest majority since 1992 after a North Carolina win."),
         ("Mexico: 11 die in cartel arrest",
          "Four soldiers and seven gunmen killed as \u2018El Chapo Isidro\u2019 "
@@ -388,14 +402,14 @@ def draw_column(x0, title, items):
     yy = COL_TOP + 30
     for head, deck in items:
         hl, dl = fit_block(d, head, deck, typeface(SANS_B, 13),
-                           typeface(SANS, 12), COL_W - 4, 41)
+                           typeface(SANS, 12), COL_W - 4, 56)
         for ln in hl:
             d.text((x0 + 2, yy), ln, font=typeface(SANS_B, 13), fill=FG)
             yy += 15
         for ln in dl:
             d.text((x0 + 2, yy), ln, font=typeface(SANS, 12), fill=SLATE)
             yy += 13
-        yy += 2
+        yy += 1
         d.line([x0, yy - 1, x0 + COL_W, yy - 1], fill=FAINT, width=1)
         yy += 1
 

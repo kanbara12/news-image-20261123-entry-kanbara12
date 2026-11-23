@@ -12,13 +12,13 @@ Below the three lead stories, a world map marks 12 places that made the news, an
 
 ## Facts checked, facts left out
 
-Every story in the image happened, or was first reported, on 23 November 2026. Claims are attributed where they are one-sided: the Houthi claim of a strike on the Rabigh refinery is Riyadh-unconfirmed, the Iranian tanker convoy at Kharg is described as "readies" because it had not sailed when this image was drawn, and the Saudi strike on a Sanaa fuel station is reported as Houthi media say. Numbers are kept as reported: 24 body bags were recovered at the Cikande factory fire, which is not the same as 24 dead, and 29 workers are still missing; in Dymer two bodies were recovered and 15 people are missing, including two children. The Wellington Test is shown live: New Zealand 157/4 at lunch on day 5, after India's record 720/9.
+Every story in the image happened, or was first reported, on 23 November 2026. Claims are attributed where they are one-sided: the Houthi claim of a strike on the Rabigh refinery is Riyadh-unconfirmed, the Iranian tanker convoy at Kharg is described as "readies" because it had not sailed when this image was drawn, and the Saudi strike on a Sanaa fuel station is reported as Houthi media say. Numbers are kept as reported: 24 body bags were recovered at the Cikande factory fire, which is not the same as 24 dead, and 29 workers are still missing; in Dymer two bodies were recovered and 15 people are missing, including two children; in South Sudan at least 24 civilians were killed in the Warrap cattle-camp attack, seven of them children. The Wellington Test is shown live: New Zealand 157/4 at lunch on day 5, after India's record 720/9.
 
 Stories checked and left out because they belong to earlier days: the Leandro Paredes collapse after the Copa Sudamericana final (Saturday 21 November), the ICE arrests at Seattle-Tacoma airport (Saturday 21 November), the UN agreement on autonomous weapons (Saturday 21 November), and the two South Africa mass shootings (Sunday 15 November).
 
 ## Files
 
-- entry.png: the image, 1024 by 1024, RGB PNG, 193,885 bytes. sha256 bb5f446e6922d9bcda4ac1af3ffc8e991c588d9476e61eb921e37b202976e2aa.
+- entry.png: the image, 1024 by 1024, RGB PNG, 215,310 bytes. sha256 100b94bafa5daca8efe71b65bea44aeb6da0f45712f2450068a9ce714aee483f.
 - render.py: draws entry.png with Pillow. It runs locally only; the grader never runs it.
 - main.py: the entry point. Standard library only. It validates entry.png (PNG magic, 1024x1024 IHDR, SHA-256) and copies it to MAKEFUN_OUTPUT_DIR.
 
